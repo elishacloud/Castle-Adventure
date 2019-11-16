@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "data.h"
 
 #define for if(false) {} else for
@@ -15,6 +16,8 @@
 #define MAX_ITEM        22
 #define MAX_ITEM_CARRY  6
 #define TILESIZE        32
+
+#define SLEEPTIME		50
 
 #define UP          0
 #define DOWN        1
@@ -97,6 +100,9 @@
 #define VAMPIRE         256
 #define FAIRY1          512
 #define FAIRY2          1024
+
+DWORD LastSystemTime = 0;
+DWORD CurrentDelay = 0;
 
 typedef struct ITEM
 {
@@ -2307,6 +2313,8 @@ int main()
     {
         drawAll();
 
+		LastSystemTime = GetTickCount();
+
         if (key[KEY_LEFT])
         {
             if (player.x<=0 && room[player.rm-1].exits[3]!=0)
@@ -2400,6 +2408,9 @@ int main()
         }
       
         if (gameover) done=true;
+		
+		CurrentDelay = GetTickCount() - LastSystemTime;
+		if (CurrentDelay < SLEEPTIME) Sleep(SLEEPTIME - CurrentDelay);
 	}
 
     if (gameover)
