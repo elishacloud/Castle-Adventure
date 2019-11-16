@@ -1,10 +1,12 @@
-#include <allegro.h>
+#include "allegro.h"
+#include "winalleg.h"
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include "data.h"
 
 #define for if(false) {} else for
+#define WIN32_LEAN_AND_MEAN
 
 #define MAX_HP          200
 
@@ -182,7 +184,7 @@ void inc_count();
 void saveHighScore();
 void loadHighScore();
 
-void saveRooms();
+//void saveRooms();
 void loadRooms();
 
 bool areSure(char *tx1,char *tx2);
@@ -308,7 +310,7 @@ void loadHighScore()
     }
     else
     {
-        strcpy(hs.name,"Sir Daniel");
+        strcpy_s(hs.name,"Sir Daniel");
         hs.score=121;
     }
 }
@@ -355,11 +357,11 @@ void initRooms()
     {
         for (int j=0; j<19; j++)
         {
-            strcpy(room[i].data[j],data[i][j]);
+            strcpy_s(room[i].data[j],data[i][j]);
         }
         for (int j=0; j<5; j++)
         {
-            strcpy(room[i].desc[j],desc[i][j]);
+            strcpy_s(room[i].desc[j],desc[i][j]);
         }
         for (int j=0; j<6; j++)
         {
@@ -415,8 +417,8 @@ bool areSure(char *tx1,char *tx2)
     int w,h;
     char text[2][60];
 
-    strcpy(text[0],tx1);
-    strcpy(text[1],tx2);
+    strcpy_s(text[0],tx1);
+    strcpy_s(text[1],tx2);
     w=0;
 
     // I like my windows to have that snug fit so only make them
@@ -512,8 +514,8 @@ void save_game()
 
             pack_fclose(pfile);
 
-            strcpy(log1,"Game Saved Successful!");
-            strcpy(log2,"");
+            strcpy_s(log1,"Game Saved Successful!");
+            strcpy_s(log2,"");
         }
     }
 }
@@ -577,14 +579,14 @@ void load_game()
         
 
             pack_fclose(pfile);
-            strcpy(log1,"Game Loaded Successful!");
-            strcpy(log2,"");
+            strcpy_s(log1,"Game Loaded Successful!");
+            strcpy_s(log2,"");
         }
     }
     else
     {
-        strcpy(log1,"There Is No Saved Game To Load!");
-        strcpy(log2,"");
+        strcpy_s(log1,"There Is No Saved Game To Load!");
+        strcpy_s(log2,"");
     }
 }
 
@@ -608,8 +610,8 @@ void initMonsters()
 
     for (int i=0; i<MAX_MONSTER; i++)
     {
-        strcpy(monster[i].adj,mon[i].adj);
-        strcpy(monster[i].name,mon[i].name);
+        strcpy_s(monster[i].adj,mon[i].adj);
+        strcpy_s(monster[i].name,mon[i].name);
         monster[i].type     =mon[i].type;
         monster[i].gfx      =mon[i].gfx;
         monster[i].y        =mon[i].y;
@@ -655,7 +657,7 @@ ITEM it[MAX_ITEM]={
  
     for (int i=0; i<MAX_ITEM; i++)
     {
-        strcpy(item[i].name,it[i].name);
+        strcpy_s(item[i].name,it[i].name);
         item[i].type    =it[i].type;
         item[i].gfx     =it[i].gfx;
         item[i].y       =it[i].y;
@@ -705,7 +707,7 @@ void initPlayer()
     drawAll();
 
     ch=0;
-    strcpy(nm,"Sir ");
+    strcpy_s(nm,"Sir ");
     clear_keybuf();
 
     while (ch!=13)
@@ -715,16 +717,16 @@ void initPlayer()
             ch=(readkey() & 0xFF);
             if (ch==8 && strlen(nm)>4 )
             {
-                strcpy(buf,"");
-                strncat(buf, nm, strlen(nm)-1);
-                strcpy(nm,buf);
+                strcpy_s(buf,"");
+                strncat_s(buf, nm, strlen(nm)-1);
+                strcpy_s(nm,buf);
             }
 
             if (strlen(nm)<15)
             {
                 if ((ch>='A' && ch<='Z') || (ch>='a' && ch<='z') || (ch==' '))
                 {
-                    sprintf(nm,"%s%c",nm,ch);
+                    sprintf_s(nm,"%s%c",nm,ch);
                 }
             }
             if (ch==13 && strlen(nm)<5)
@@ -745,7 +747,7 @@ void initPlayer()
         release_screen();
     }
 
-    strcpy(player.name,nm);
+    strcpy_s(player.name,nm);
 
     while (key[KEY_ENTER] || key[KEY_ENTER_PAD]) {}
 
@@ -807,8 +809,8 @@ int initAll()
  */
 void resetGame()
 {
-    strcpy(log1,"");
-    strcpy(log2,"");
+    strcpy_s(log1,"");
+    strcpy_s(log2,"");
 
     loadRooms();
 
@@ -966,7 +968,7 @@ void drawWindow(BITMAP *bmp,int w,int h,int style)
  */
 int select_item(char *name)
 {
-    int w,h,k,p=0,x,y,t,r=-1;
+    int w,h,k,p=0,x,y,t=0,r=-1;
     BITMAP *temp;
 
     if (player.itemcount==0)
@@ -1146,8 +1148,8 @@ void useItem(int t)
     bool p=false;
     if (item[t].type==WINE_FLASK)
     {
-        strcpy(log1,"After You Drink The Water From");
-        strcpy(log2,"The Flask, You Feel Much Better!");
+        strcpy_s(log1,"After You Drink The Water From");
+        strcpy_s(log2,"The Flask, You Feel Much Better!");
         player.hp=MAX_HP;
         p=true;
     }
@@ -1156,14 +1158,14 @@ void useItem(int t)
         p=true;
         if (player.rm==1)
         {
-            strcpy(log1,"As You Wave The Scepter, The Gate");
-            strcpy(log2,"And Vanishes In A Puff Of Smoke!");
-            strcpy(room[0].data[17],"cccccccccc    cccccccccc*");                    
+            strcpy_s(log1,"As You Wave The Scepter, The Gate");
+            strcpy_s(log2,"And Vanishes In A Puff Of Smoke!");
+            strcpy_s(room[0].data[17],"cccccccccc    cccccccccc*");                    
         }
         else
         {
-            strcpy(log1,"As You Wave The Scepter,");
-            strcpy(log2,"Nothing Happens!");
+            strcpy_s(log1,"As You Wave The Scepter,");
+            strcpy_s(log2,"Nothing Happens!");
         }
     }
     if (item[t].type==HOLY_CROSS)
@@ -1172,16 +1174,16 @@ void useItem(int t)
         {
             p=true;
             monster[8].room=-1;
-            strcpy(log1,"The Vampire Sees The Holy Cross");
-            strcpy(log2,"And Disappears In A Puff Of Smoke!");
+            strcpy_s(log1,"The Vampire Sees The Holy Cross");
+            strcpy_s(log2,"And Disappears In A Puff Of Smoke!");
         }
 
     } 
     if (item[t].type==HARP)
     {
         p=true;
-        strcpy(log1,"The Harp Makes	Beautiful Music!");
-        strcpy(log2,"");
+        strcpy_s(log1,"The Harp Makes	Beautiful Music!");
+        strcpy_s(log2,"");
         if (player.rm==54 || player.rm==52)
         {
             monster[9].room=-1;
@@ -1189,7 +1191,7 @@ void useItem(int t)
             monster[10].room=-1;
             monster[10].state=DEAD;
 
-            strcpy(log2,"The Fairy Likes The Music And Leaves!");
+            strcpy_s(log2,"The Fairy Likes The Music And Leaves!");
         }
     }
     if (item[t].type==MAGIC_WAND)
@@ -1197,33 +1199,33 @@ void useItem(int t)
         p=true;
         if (player.rm==77)
         {
-            strcpy(log1,"As You Wave The Magic Wand,");
-            strcpy(log2,"A Door Opens In A Puff Of Smoke!");
-            strcpy(room[76].data[17], "***cccccccc  cccccccccc**");            
+            strcpy_s(log1,"As You Wave The Magic Wand,");
+            strcpy_s(log2,"A Door Opens In A Puff Of Smoke!");
+            strcpy_s(room[76].data[17], "***cccccccc  cccccccccc**");            
         } 
         else
         {
             if (player.rm==67)
             {
-                strcpy(log1,"As You Wave The Magic Wand,");
-                strcpy(log2,"A Door Opens In A Puff Of Smoke!");
-                strcpy(room[66].data[7],"cccccc            dcccccc");
-                strcpy(room[66].data[8],"                         ");
-                strcpy(room[66].data[9],"                         ");
-                strcpy(room[66].data[10],"cccccc            dcccccc");
+                strcpy_s(log1,"As You Wave The Magic Wand,");
+                strcpy_s(log2,"A Door Opens In A Puff Of Smoke!");
+                strcpy_s(room[66].data[7],"cccccc            dcccccc");
+                strcpy_s(room[66].data[8],"                         ");
+                strcpy_s(room[66].data[9],"                         ");
+                strcpy_s(room[66].data[10],"cccccc            dcccccc");
             } 
             else
             {
-                strcpy(log1,"As You Wave The Magic Wand,");
-                strcpy(log2,"Nothing Happens!");
+                strcpy_s(log1,"As You Wave The Magic Wand,");
+                strcpy_s(log2,"Nothing Happens!");
             }
         }
     }
 
     if (!p)
     {
-        strcpy(log1,"Don't You Feel Silly Waving");
-        strcpy(log2,"That Thing Around!");
+        strcpy_s(log1,"Don't You Feel Silly Waving");
+        strcpy_s(log2,"That Thing Around!");
     }
 }
 
@@ -1245,28 +1247,28 @@ void wearItem(int t)
     if (item[t].type==NECKLACE)
     {
         player.wear|=NECKLACE;
-        strcpy(log1,"For Some Reason, You Feel");
-        strcpy(log2,"Safe Wearing The Necklace!");
+        strcpy_s(log1,"For Some Reason, You Feel");
+        strcpy_s(log2,"Safe Wearing The Necklace!");
         p=true;
     }
     if (item[t].type==EYE_GLASSES)
     {
         player.wear|=EYE_GLASSES;
-        strcpy(log1,"You Put On the Eye Glasses");
-        strcpy(log2,"And You Can See Better!");
+        strcpy_s(log1,"You Put On the Eye Glasses");
+        strcpy_s(log2,"And You Can See Better!");
         p=true;
     }
     if (item[t].type==HELMET)
     {
         player.wear|=HELMET;
-        strcpy(log1,"You Are Now Wearing");
-        strcpy(log2,"The Helmet!");
+        strcpy_s(log1,"You Are Now Wearing");
+        strcpy_s(log2,"The Helmet!");
         p=true;
     }
     if (!p)
     {
-        strcpy(log1,"You Would Look Silly Wearing It!");
-        strcpy(log2,"");
+        strcpy_s(log1,"You Would Look Silly Wearing It!");
+        strcpy_s(log2,"");
     }
 }
 
@@ -1285,8 +1287,8 @@ void wear_item()
         }
         else
         {
-            strcpy(log1,"You Are Allready Wearing It!");
-            strcpy(log2,"");
+            strcpy_s(log1,"You Are Allready Wearing It!");
+            strcpy_s(log2,"");
         }
     }
 }
@@ -1300,121 +1302,121 @@ void lookItem(int t)
     {
     case LAMP:
         {
-            strcpy(log1,"The Lamp Is Magically Lit");
-            strcpy(log2,"");
+            strcpy_s(log1,"The Lamp Is Magically Lit");
+            strcpy_s(log2,"");
         } break; 
     case HARP:
         {
-            strcpy(log1,"A Solid Gold Harp!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Solid Gold Harp!");
+            strcpy_s(log2,"");
         } break; 
     case NECKLACE:
         {
-            strcpy(log1,"There Is An Inscription On The Back!");
-            strcpy(log2,"\"Protection From Traps!\"");
+            strcpy_s(log1,"There Is An Inscription On The Back!");
+            strcpy_s(log2,"\"Protection From Traps!\"");
         } break; 
     case BOOK:
         {
             if ((player.wear & EYE_GLASSES)==0)
             {
-                strcpy(log1,"The Words Are Too Blurry");
-                strcpy(log2,"To Read");
+                strcpy_s(log1,"The Words Are Too Blurry");
+                strcpy_s(log2,"To Read");
             }
             else
             {
-                strcpy(log1,"Book Title: \"The Gate\"");
-                strcpy(log2,"   --Wave Scepter--   ");
+                strcpy_s(log1,"Book Title: \"The Gate\"");
+                strcpy_s(log2,"   --Wave Scepter--   ");
             }
         } break; 
     case MAGIC_WAND:
         {
-            strcpy(log1,"A Magical Silver Wand!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Magical Silver Wand!");
+            strcpy_s(log2,"");
         } break; 
     case SWORD:
         {
-            strcpy(log1,"A Solid Steel Sword!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Solid Steel Sword!");
+            strcpy_s(log2,"");
         } break; 
     case KEY:
         {
-            strcpy(log1,"A Rusty Looking Key!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Rusty Looking Key!");
+            strcpy_s(log2,"");
         } break; 
     case EYE_GLASSES:
         {
-            strcpy(log1,"A Pair of Bifocals!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Pair of Bifocals!");
+            strcpy_s(log2,"");
         } break; 
     case CRYSTAL_BALL:
         {
-            strcpy(log1,"You See A Man In A Winding");
-            strcpy(log2,"Passage, Waving A Wand!");
+            strcpy_s(log1,"You See A Man In A Winding");
+            strcpy_s(log2,"Passage, Waving A Wand!");
         } break; 
     case HELMET:
         {
-            strcpy(log1,"A Solid Looking Helmet!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Solid Looking Helmet!");
+            strcpy_s(log2,"");
         } break;
     case WINE_FLASK:
         {
-            strcpy(log1,"A Magical Wine Flask!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Magical Wine Flask!");
+            strcpy_s(log2,"");
         } break; 
     case HOLY_CROSS:
         {
-            strcpy(log1,"A Gold Cross With Four");
-            strcpy(log2,"Gems Set In The Points");
+            strcpy_s(log1,"A Gold Cross With Four");
+            strcpy_s(log2,"Gems Set In The Points");
         } break; 
     case DIAMOND:
         {
-            strcpy(log1,"A Flawless Perfect Cut Diamond!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Flawless Perfect Cut Diamond!");
+            strcpy_s(log2,"");
         } break; 
     case SILVER_BARS:
         {
-            strcpy(log1,"Two Solid Silver Bars!");
-            strcpy(log2,"");
+            strcpy_s(log1,"Two Solid Silver Bars!");
+            strcpy_s(log2,"");
         } break; 
     case RUBYS:
         {
-            strcpy(log1,"A Large Beautiful Ruby!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Large Beautiful Ruby!");
+            strcpy_s(log2,"");
         } break; 
     case JADE_FIGURINE:
         {
-            strcpy(log1,"A Solid Jade Figurine");
-            strcpy(log2,"With Sapphires For Eyes!");
+            strcpy_s(log1,"A Solid Jade Figurine");
+            strcpy_s(log2,"With Sapphires For Eyes!");
         } break; 
     case SCEPTER:
         {
-            strcpy(log1,"A Firey Ruby Sits Atop");
-            strcpy(log2,"This Powerful Scepter");
+            strcpy_s(log1,"A Firey Ruby Sits Atop");
+            strcpy_s(log2,"This Powerful Scepter");
         } break; 
     case HOURGLASS:
         {
-            strcpy(log1,"A Gold HourGlass With");
-            strcpy(log2,"Diamond Sand!");
+            strcpy_s(log1,"A Gold HourGlass With");
+            strcpy_s(log2,"Diamond Sand!");
         } break; 
     case LARGE_GEM:
         {
-            strcpy(log1,"A Very Large Priceless Gem!");
-            strcpy(log2,"");
+            strcpy_s(log1,"A Very Large Priceless Gem!");
+            strcpy_s(log2,"");
         } break; 
     case GOLDBAR:
         {
-            strcpy(log1,"It Is A Solid Gold Bar!");
-            strcpy(log2,"");
+            strcpy_s(log1,"It Is A Solid Gold Bar!");
+            strcpy_s(log2,"");
         } break; 
     case FANCY_GOBLET:
         {
-            strcpy(log1,"It Is Made Out of Gold!");
-            strcpy(log2,"");
+            strcpy_s(log1,"It Is Made Out of Gold!");
+            strcpy_s(log2,"");
         } break; 
     case CROWN:
         {
-            strcpy(log1,"It Is Made Out Of Gold");
-            strcpy(log2,"With Rubys Attached!");
+            strcpy_s(log1,"It Is Made Out Of Gold");
+            strcpy_s(log2,"With Rubys Attached!");
         } break; 
     }
 }
@@ -1510,7 +1512,7 @@ int computeScore()
     if (s>hs.score)
     {
         hs.score=s;
-        strcpy(hs.name,player.name);
+        strcpy_s(hs.name,player.name);
     }
 
     return s;
@@ -1531,10 +1533,10 @@ void do_end(int p)
                       "Your Score:        ",
                       "(1550 is perfect)"};
     
-    sprintf(text[6],"Your Score: %d",computeScore());
-    if (p==0) strcpy(text[0],"You Have Escaped the Castle!");
-    if (p==1) strcpy(text[0],"You Died!");
-    if (p==2) strcpy(text[0],"You Are A Cowered!");
+    sprintf_s(text[6],"Your Score: %d",computeScore());
+    if (p==0) strcpy_s(text[0],"You Have Escaped the Castle!");
+    if (p==1) strcpy_s(text[0],"You Died!");
+    if (p==2) strcpy_s(text[0],"You Are A Cowered!");
 
     int w,h,k,c;
 
@@ -1684,6 +1686,7 @@ void do_inventory()
  */
 void drawLog(BITMAP *bmp)
 {
+	UNREFERENCED_PARAMETER(bmp);
     textout(buffer,myfont,log1,8,708,makecol(255,255,255));
     textout(buffer,myfont,log2,8,728,makecol(255,255,255)); 
 }
@@ -1736,6 +1739,7 @@ void drawAll()
  */
 void inc_frame(int d)
 {
+	UNREFERENCED_PARAMETER(d);
     player.frame++;
 	if (player.dir==UP)
 	{	
@@ -1785,14 +1789,14 @@ bool hit_wall(int q,int x, int y)
                             }
                             else
                             {
-                                strcpy(log1,"The Door Is Locked!");
-                                strcpy(log2,"");
+                                strcpy_s(log1,"The Door Is Locked!");
+                                strcpy_s(log2,"");
                             }                            
                         }
                         if (player.rm==1)
                         {
-                            strcpy(log1,"The Gate Is Magically Sealed!");
-                            strcpy(log2,"");
+                            strcpy_s(log1,"The Gate Is Magically Sealed!");
+                            strcpy_s(log2,"");
                         }
                     }
                     
@@ -1813,13 +1817,13 @@ bool hit_wall(int q,int x, int y)
                             player.item|=item[p-'A'].type;
                             room[player.rm-1].data[y1][x1]=' ';
                             player.itemcount++;
-                            sprintf(log1,"You Found a %s!",item[p-'A'].name);
-                            strcpy(log2,"");
+                            sprintf_s(log1,"You Found a %s!",item[p-'A'].name);
+                            strcpy_s(log2,"");
                             return false;
                         }
                         else
                         {
-                            strcpy(log2,"But You Can't Carry Any More!");
+                            strcpy_s(log2,"But You Can't Carry Any More!");
                             return true;
                         }
                     }
@@ -1847,8 +1851,8 @@ bool hit_monster(int x, int y)
             {
                 if (monster[k].type==VAMPIRE || monster[k].type==FAIRY1 || monster[k].type==FAIRY2)
                 {
-                    sprintf(log1,"The Is A %s Blocking Your Path,",monster[k].name);
-                    strcpy(log2,"But It Can't Be Hurt!");
+                    sprintf_s(log1,"The Is A %s Blocking Your Path,",monster[k].name);
+                    strcpy_s(log2,"But It Can't Be Hurt!");
                 }
                 return true;
             }
@@ -1947,11 +1951,11 @@ void moveMonsters()
         {
             player.hp-=monster[h].hit;
             if (player.hp<1) gameover=true;
-            sprintf(log2,"The %s %s Hit You!",monster[h].adj,monster[h].name);
+            sprintf_s(log2,"The %s %s Hit You!",monster[h].adj,monster[h].name);
         }
         else
         {
-            sprintf(log2,"The %s %s Missed You!",monster[h].adj,monster[h].name);
+            sprintf_s(log2,"The %s %s Missed You!",monster[h].adj,monster[h].name);
         }
     }
 }
@@ -2053,19 +2057,19 @@ void move(int d)
         if (Random(10)<4 && (player.item & SWORD)!=0)
         {
             monster[h].hp-=10+Random(10);
-            sprintf(log1,"You Hit The %s %s!",monster[h].adj,monster[h].name);
+            sprintf_s(log1,"You Hit The %s %s!",monster[h].adj,monster[h].name);
             if (monster[h].hp<1)
             {
-                sprintf(log1,"You Killed The %s %s!",monster[h].adj,monster[h].name);
+                sprintf_s(log1,"You Killed The %s %s!",monster[h].adj,monster[h].name);
                 monster[h].state=DEAD;
-                strcpy(monster[h].adj,"Dead");
+                strcpy_s(monster[h].adj,"Dead");
             }
-            strcpy(log2,"");
+            strcpy_s(log2,"");
         }
         else
         {
-            sprintf(log1,"You Missed The %s %s!",monster[h].adj,monster[h].name);
-            strcpy(log2,"");
+            sprintf_s(log1,"You Missed The %s %s!",monster[h].adj,monster[h].name);
+            strcpy_s(log2,"");
         }
     }
 }
@@ -2078,21 +2082,21 @@ void do_flood()
 {
     char s1[40],s2[40];
 
-    strcpy(s1,room[81].data[8]);
-    strcpy(s2,room[81].data[9]);
+    strcpy_s(s1,room[81].data[8]);
+    strcpy_s(s2,room[81].data[9]);
 
     s1[1]='c';s1[12]='c';
     s2[1]='c';s2[12]='c';
 
-    strcpy(room[81].data[8],s1);
-    strcpy(room[81].data[9],s2);
+    strcpy_s(room[81].data[8],s1);
+    strcpy_s(room[81].data[9],s2);
     for (int i=2; i<=11; i++)
     {
         s1[i]='t';
         s2[i]='t';
 
-        strcpy(room[81].data[8],s1);
-        strcpy(room[81].data[9],s2);
+        strcpy_s(room[81].data[8],s1);
+        strcpy_s(room[81].data[9],s2);
         drawAll();
     }
 }
@@ -2105,10 +2109,10 @@ void check_special()
 {
     if (player.rm==82 && player.x>96 && player.x<320 && (player.wear & NECKLACE)==0)
     {
-        strcpy(log1,"Oh No! A Booby Trap!");
+        strcpy_s(log1,"Oh No! A Booby Trap!");
         drawAll();
         do_flood();
-        strcpy(log2,"You Drowned!");
+        strcpy_s(log2,"You Drowned!");
         
         drawAll();
         rest(1000);
@@ -2117,8 +2121,8 @@ void check_special()
     if (player.rm==68 && (player.item & LAMP)==0)
     {
         change_room(room[player.rm-1].exits[4]);
-        strcpy(log1,"It's Too Dark To See Down There!");
-        strcpy(log2,"");
+        strcpy_s(log1,"It's Too Dark To See Down There!");
+        strcpy_s(log2,"");
     }
 }
 
@@ -2163,8 +2167,8 @@ void load_monster(int r)
  */
 void change_room(int r)
 {
-    strcpy(log1,"");
-    strcpy(log2,"");
+    strcpy_s(log1,"");
+    strcpy_s(log2,"");
     save_monster(player.rm);
     player.rm=r;
     load_monster(player.rm);
@@ -2193,10 +2197,10 @@ void do_search()
             {
                 if (item[i].room-100==player.rm && (player.item & item[i].type)==0)
                 {
-                    sprintf(log1," You found a %s!",item[i].name);
+                    sprintf_s(log1," You found a %s!",item[i].name);
                     if (player.itemcount==MAX_ITEM_CARRY)
                     {
-                        strcpy(log2,"But You Can't Carry Any More!");                        
+                        strcpy_s(log2,"But You Can't Carry Any More!");                        
                     }
                     else
                     {
@@ -2215,8 +2219,8 @@ void do_search()
 
     if (!p)
     {
-        strcpy(log1,"You Didn't Find Anything!");
-        strcpy(log2,"");
+        strcpy_s(log1,"You Didn't Find Anything!");
+        strcpy_s(log2,"");
     }
     while (key[KEY_F3]) {}
 }
@@ -2232,17 +2236,17 @@ void do_look()
     {
     case 1:
         {
-            strcpy(log1,"There Is Something Scratched In the Wall!");
-            sprintf(log2,"High Score: %s %d",hs.name,hs.score);
+            strcpy_s(log1,"There Is Something Scratched In the Wall!");
+            sprintf_s(log2,"High Score: %s %d",hs.name,hs.score);
             p=true;
         } break;
     case 19:
         {
-            strcpy(log1,"You See A Statue Of The King!");
+            strcpy_s(log1,"You See A Statue Of The King!");
             if (item[2].room>83 && (player.item & NECKLACE)==0)
-                strcpy(log2,"The Statue is Wearing a Necklace!");
+                strcpy_s(log2,"The Statue is Wearing a Necklace!");
             else
-                strcpy(log2,"");
+                strcpy_s(log2,"");
             p=true;
         } break;
     case 33:
@@ -2252,38 +2256,38 @@ void do_look()
                 room[32].data[(player.y)/TILESIZE][(player.x+TILESIZE-1)/TILESIZE]=='#' ||
                 room[32].data[(player.y+TILESIZE-1)/TILESIZE][(player.x+TILESIZE-1)/TILESIZE]=='#')
             {
-                strcpy(log1,"You Look Out Over The Garden!");
+                strcpy_s(log1,"You Look Out Over The Garden!");
                 if (item[18].room>83 && (player.item & LARGE_GEM)==0)
-                    strcpy(log2,"There Is Something in the Fountain!");
+                    strcpy_s(log2,"There Is Something in the Fountain!");
                 else
-                    strcpy(log2,"");
+                    strcpy_s(log2,"");
                 p=true;
             }
         } break;
     case 58:
         {
-            strcpy(log1,"The Shelves Are Empty, But There");
-            strcpy(log2,"Somthing On That Middle Shelf");
+            strcpy_s(log1,"The Shelves Are Empty, But There");
+            strcpy_s(log2,"Somthing On That Middle Shelf");
             p=true;
         } break;
     case 74:
         {
-            strcpy(log1,"You See Something Written On The Walls!");
-            strcpy(log2,"\"Kevin Bales Was Here!\"");
+            strcpy_s(log1,"You See Something Written On The Walls!");
+            strcpy_s(log2,"\"Kevin Bales Was Here!\"");
             p=true;
         } break;
     case 79:
         {
-            strcpy(msg1,"There Are Blood Stains");
-            strcpy(msg2,"On The Table! Yuch!");
+            strcpy_s(msg1,"There Are Blood Stains");
+            strcpy_s(msg2,"On The Table! Yuch!");
             p=true;
         } break;
     }
 
     if (!p)
     {
-        strcpy(log1,"You Don't See Anything Special!");
-        strcpy(log2,"");
+        strcpy_s(log1,"You Don't See Anything Special!");
+        strcpy_s(log2,"");
     }
     while (key[KEY_F2]) {}
 }
